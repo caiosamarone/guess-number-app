@@ -5,16 +5,53 @@ import {
   StatusBar,
   View,
 } from "react-native";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import StartGameScreen from "./screens/StartGameScreen";
 import { LinearGradient } from "expo-linear-gradient";
 import GameScreen from "./screens/GameScreen";
 import GameOverScreen from "./screens/GameOverScreen";
 import Colors from "./constants/colors";
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
 
 export default function App() {
   const [userNumber, setUserNumber] = useState(null);
   const [gameIsOver, setGameIsOver] = useState(true);
+  const [numberOfGuesses, setNumberOfGuesses] = useState(0);
+  const [listOfGuesses, setListOfGuesses] = useState([]);
+  const [fontsLoaded] = useFonts({
+    "open-sans": require("./assets/fonts/OpenSans-Regular.ttf"),
+    "open-sans-bold": require("./assets/fonts/OpenSans-Bold.ttf"),
+  });
+
+  useEffect(() => {
+    async function prepare() {
+      await SplashScreen.preventAutoHideAsync();
+    }
+    prepare();
+  }, []);
+
+  function resetGame() {
+    setUserNumber(null);
+    setGameIsOver(true);
+    setNumberOfGuesses(0);
+    setListOfGuesses([]);
+  }
+
+  function updateGuesses() {
+    setNumberOfGuesses((guesses) => guesses + 1);
+  }
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   function pickedNumberHandler(pickedNumber) {
     setUserNumber(pickedNumber);
@@ -27,16 +64,29 @@ export default function App() {
   let screen = <StartGameScreen onPickNumber={pickedNumberHandler} />;
   if (userNumber) {
     screen = (
-      <GameScreen userNumber={userNumber} gameOverHandler={gameOverHandler} />
+      <GameScreen
+        userNumber={userNumber}
+        gameOverHandler={gameOverHandler}
+        updateGuesses={updateGuesses}
+        setListOfGuesses={setListOfGuesses}
+        listOfGuesses={listOfGuesses}
+      />
     );
   }
 
   if (gameIsOver && userNumber) {
-    screen = <GameOverScreen />;
+    screen = (
+      <GameOverScreen
+        resetGame={resetGame}
+        numberOfGuesses={numberOfGuesses}
+        userNumber={userNumber}
+      />
+    );
   }
 
   return (
     <LinearGradient
+      onLayout={onLayoutRootView}
       colors={[Colors.primary700, Colors.accent500]}
       style={styles.rootScreen}
     >
