@@ -2,7 +2,6 @@ import {
   StyleSheet,
   ImageBackground,
   Platform,
-  StatusBar,
   View,
   SafeAreaView,
 } from "react-native";
@@ -14,6 +13,7 @@ import GameOverScreen from "./screens/GameOverScreen";
 import Colors from "./constants/colors";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
 
 export default function App() {
   const [userNumber, setUserNumber] = useState(null);
@@ -86,30 +86,29 @@ export default function App() {
   }
 
   return (
-    <LinearGradient
-      onLayout={onLayoutRootView}
-      colors={[Colors.primary700, Colors.accent500]}
-      style={styles.rootScreen}
-    >
-      <ImageBackground
-        source={require("./assets/background.png")}
-        resizeMode="cover"
+    <>
+      <StatusBar style="light" />
+      <LinearGradient
+        onLayout={onLayoutRootView}
+        colors={[Colors.primary700, Colors.accent500]}
         style={styles.rootScreen}
-        imageStyle={styles.backgroundImage}
       >
-        <SafeAreaView style={styles.safeAreaView}>{screen}</SafeAreaView>
-      </ImageBackground>
-    </LinearGradient>
+        <ImageBackground
+          source={require("./assets/background.png")}
+          resizeMode="cover"
+          style={styles.rootScreen}
+          imageStyle={styles.backgroundImage}
+        >
+          <SafeAreaView style={styles.rootScreen}>{screen}</SafeAreaView>
+        </ImageBackground>
+      </LinearGradient>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   rootScreen: {
     flex: 1,
-  },
-  safeAreaView: {
-    flex: 1,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   backgroundImage: {
     opacity: 0.15,
