@@ -4,6 +4,7 @@ import {
   Platform,
   StatusBar,
   View,
+  SafeAreaView,
 } from "react-native";
 import { useState, useEffect, useCallback } from "react";
 import StartGameScreen from "./screens/StartGameScreen";
@@ -96,7 +97,7 @@ export default function App() {
         style={styles.rootScreen}
         imageStyle={styles.backgroundImage}
       >
-        <View style={styles.safeAreaView}>{screen}</View>
+        <SafeAreaView style={styles.safeAreaView}>{screen}</SafeAreaView>
       </ImageBackground>
     </LinearGradient>
   );

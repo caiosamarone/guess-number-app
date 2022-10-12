@@ -114,6 +114,7 @@ const styles = StyleSheet.create({
   main: {
     flex: 1,
     padding: 24,
+    alignItems: "center",
   },
   instructionText: {
     marginBottom: 12,
