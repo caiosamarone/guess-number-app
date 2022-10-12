@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { View, StyleSheet, Alert, FlatList } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Alert,
+  FlatList,
+  useWindowDimensions,
+} from "react-native";
 import NumberContainer from "../components/game/NumberContainer";
 import Card from "../components/ui/Card";
 import InstructionText from "../components/ui/InstructionText";
@@ -27,6 +33,7 @@ function GameScreen({
 }) {
   const initialGuess = gererateRandomBetween(1, 100, userNumber);
   const [currentGuess, setCurrentGuess] = useState(initialGuess);
+  const { width, height } = useWindowDimensions();
 
   useEffect(() => {
     minBoundary = 1;
@@ -68,9 +75,8 @@ function GameScreen({
   }
   const guessRoundsListsLength = listOfGuesses.length;
 
-  return (
-    <View style={styles.main}>
-      <Title>Opponent's guess</Title>
+  let content = (
+    <>
       <NumberContainer>{currentGuess}</NumberContainer>
       <Card>
         <InstructionText style={styles.instructionText}>
@@ -89,10 +95,33 @@ function GameScreen({
           </View>
         </View>
       </Card>
+    </>
+  );
+  if (width > 500) {
+    content = (
+      <>
+        <View style={styles.buttonsContainerLanscapeMode}>
+          <View style={styles.buttonContainer}>
+            <PrimaryButton onPress={nextGuessHandler.bind(this, false)}>
+              <Ionicons name="md-add" size={24} color="white" />
+            </PrimaryButton>
+          </View>
+          <NumberContainer>{currentGuess}</NumberContainer>
+          <View style={styles.buttonContainer}>
+            <PrimaryButton onPress={nextGuessHandler.bind(this, true)}>
+              <Ionicons name="md-remove" size={24} color="white" />
+            </PrimaryButton>
+          </View>
+        </View>
+      </>
+    );
+  }
+
+  return (
+    <View style={styles.main}>
+      <Title>Opponent's guess</Title>
+      {content}
       <View style={styles.listContainer}>
-        {/* {listOfGuesses.map((item) => (
-          <Text key={item}>{item}</Text>
-        ))} */}
         <FlatList
           data={listOfGuesses}
           renderItem={(itemData) => (
@@ -123,7 +152,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   buttonContainer: {
-    flex: 3,
+    flex: 1,
+  },
+  buttonsContainerLanscapeMode: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   listContainer: {
     flex: 1,
